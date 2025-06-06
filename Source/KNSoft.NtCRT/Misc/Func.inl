@@ -9,7 +9,7 @@ int
 __cdecl
 _getpid(void)
 {
-    return NtCurrentProcessId();
+    return (int)(INT_PTR)NtCurrentProcessId();
 }
 
 EXTERN_C_END

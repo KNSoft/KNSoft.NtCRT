@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "../NtCRT.inl"
+#include "NtCRT.inl"
 
 #include <heap/calloc_base.cpp>
 #include <heap/expand.cpp>

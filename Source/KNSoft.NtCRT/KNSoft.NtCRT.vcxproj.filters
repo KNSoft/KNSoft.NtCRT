@@ -27,6 +27,13 @@
     <None Include="Lowio.inl" />
     <None Include="Internal.inl" />
     <None Include="Stdio.inl" />
+    <None Include="Startup\ArgV.inl">
+      <Filter>Startup</Filter>
+    </None>
+    <None Include="Startup\Misc.inl">
+      <Filter>Startup</Filter>
+    </None>
+    <None Include="Env.inl" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

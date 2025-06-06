@@ -3,7 +3,7 @@
 #include <KNSoft/NDK/NDK.inl>
 
 /*
- * _GS_* For GS entropy only, it doesn't need to be accurate
+ * _GS_* For GS entropy only, we don't care about correctness
  */
 
 FORCEINLINE
@@ -34,6 +34,13 @@ _GS_GetTickCount64(VOID)
 
 #define GetCurrentThreadId _Inline_GetCurrentThreadId
 #define GetCurrentProcessId _Inline_GetCurrentProcessId
+#define GetCurrentProcess _Inline_GetCurrentProcess
+#define GetEnvironmentStringsW _Inline_GetEnvironmentStringsW
+#define FreeEnvironmentStringsW _Inline_FreeEnvironmentStringsW
+#define ExitProcess _Inline_ExitProcess
+#define TerminateProcess _Inline_TerminateProcess
+
+#define GetLastError _Inline_GetLastError
 
 #define QueryPerformanceCounter _Inline_QueryPerformanceCounter
 
@@ -50,4 +57,10 @@ _GS_GetTickCount64(VOID)
 #define HeapQueryInformation _Inline_HeapQueryInformation
 #define HeapValidate _Inline_HeapValidate
 #define HeapCompact _Inline_HeapCompact
+
+#define GetStdHandle _Inline_GetStdHandle
 #define SetStdHandle _Inline_SetStdHandle
+#define FlushFileBuffers _Inline_FlushFileBuffers
+#define CloseHandle _Inline_CloseHandle
+
+#define IsProcessorFeaturePresent _Inline_IsProcessorFeaturePresent
