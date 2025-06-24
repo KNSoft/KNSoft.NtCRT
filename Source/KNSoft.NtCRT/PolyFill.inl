@@ -37,14 +37,20 @@ _GS_GetTickCount64(VOID)
 #define GetCurrentProcess _Inline_GetCurrentProcess
 #define GetEnvironmentStringsW _Inline_GetEnvironmentStringsW
 #define FreeEnvironmentStringsW _Inline_FreeEnvironmentStringsW
+#define GetStartupInfoW _Inline_GetStartupInfoW
+#define GetModuleHandleW _Inline_GetModuleHandleW
+#define IsDebuggerPresent _Inline_IsDebuggerPresent
 #define ExitProcess _Inline_ExitProcess
 #define TerminateProcess _Inline_TerminateProcess
 
 #define GetLastError _Inline_GetLastError
+#define SetLastError _Inline_SetLastError
 
 #define QueryPerformanceCounter _Inline_QueryPerformanceCounter
 
 #define EncodePointer _Inline_EncodePointer
+#define DecodePointer _Inline_DecodePointer
+#define InitializeCriticalSectionAndSpinCount _Inline_InitializeCriticalSectionAndSpinCount
 #define DeleteCriticalSection _Inline_DeleteCriticalSection
 #define EnterCriticalSection _Inline_EnterCriticalSection
 #define LeaveCriticalSection _Inline_LeaveCriticalSection
@@ -60,7 +66,11 @@ _GS_GetTickCount64(VOID)
 
 #define GetStdHandle _Inline_GetStdHandle
 #define SetStdHandle _Inline_SetStdHandle
+#define WriteFile _Inline_WriteFile
 #define FlushFileBuffers _Inline_FlushFileBuffers
+#define SetFilePointerEx _Inline_SetFilePointerEx
 #define CloseHandle _Inline_CloseHandle
 
 #define IsProcessorFeaturePresent _Inline_IsProcessorFeaturePresent
+#define InitializeSListHead _Inline_InitializeSListHead
+#define InterlockedFlushSList _Inline_InterlockedFlushSList

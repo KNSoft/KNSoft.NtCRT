@@ -13,6 +13,9 @@
     <Filter Include="VCRT">
       <UniqueIdentifier>{09b9918b-4716-4fdc-89bb-28dfa415a3f9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Conio">
+      <UniqueIdentifier>{283b1119-6011-416d-8b51-e0bcd1722a96}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="NtCRT.inl" />
@@ -34,6 +37,9 @@
       <Filter>Startup</Filter>
     </None>
     <None Include="Env.inl" />
+    <None Include="Conio\InitCon.inl">
+      <Filter>Conio</Filter>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

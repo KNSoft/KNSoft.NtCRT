@@ -18,7 +18,9 @@ EXTERN_C_START
 #undef GetSystemTimeAsFileTime
 #undef GetTickCount64
 
-#include <locks.cpp>
-// #include <winapi_downlevel.cpp>
-
 EXTERN_C_END
+
+#include <locks.cpp>
+#include <tncleanup.cpp>
+#include <utility_desktop.cpp>
+// #include <winapi_downlevel.cpp>

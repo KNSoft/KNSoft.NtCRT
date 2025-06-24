@@ -17,6 +17,8 @@
 #define _VCRT_WIN32_WINNT _WIN32_WINNT_VISTA
 #endif
 
+#include "PolyFill.inl"
+
 // Section 'section-name' is reserved for C++ dynamic initialization.
 #pragma warning(disable: 5247 5248)
 #include <corecrt_internal.h>
@@ -28,7 +30,11 @@
 #include <vcruntime_internal.h>
 
 #ifdef __cplusplus
-#include <vcstartup_internal.h>
+#pragma push_macro("WINBASEAPI")
+#ifdef WINBASEAPI
+#undef WINBASEAPI
 #endif
-
-#include "PolyFill.inl"
+#define WINBASEAPI
+#include <vcstartup_internal.h>
+#pragma pop_macro("WINBASEAPI")
+#endif

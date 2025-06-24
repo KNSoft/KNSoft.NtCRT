@@ -2,6 +2,8 @@
 
 #include "../NtCRT.inl"
 
+#include <misc/invalid_parameter.cpp>
+
 EXTERN_C_START
 
 _ACRTIMP
