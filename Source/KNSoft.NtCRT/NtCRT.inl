@@ -2,7 +2,11 @@
 
 #define _CRTBLD
 #define _VCRT_BUILD
+
+#ifndef _M_ARM64
 #define _VCRT_WINDOWS_BUILD
+#endif
+
 #define _CORECRT_BUILD
 #define _CRT_DECLARE_GLOBAL_VARIABLES_DIRECTLY
 #define _ALLOW_OLD_VALIDATE_MACROS
@@ -16,6 +20,8 @@
 #ifndef _VCRT_WIN32_WINNT
 #define _VCRT_WIN32_WINNT _WIN32_WINNT_VISTA
 #endif
+
+#define _CRT_WINDOWS
 
 #include "PolyFill.inl"
 
