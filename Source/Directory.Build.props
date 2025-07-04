@@ -12,6 +12,9 @@
             <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
             <ObjectFileName>$(IntDir)%(Directory)</ObjectFileName>
         </ClCompile>
+        <MASM>
+            <ObjectFileName>$(IntDir)%(Directory)</ObjectFileName>
+        </MASM>
     </ItemDefinitionGroup>
 
     <!-- MSBuild variable to C/C++ macro -->
@@ -61,14 +64,17 @@
         </ClCompile>
     </ItemDefinitionGroup>
 
-    <!-- Bring Macros to MASM and MARMASM -->
+    <!-- Bring CL Macros to MASM and MARMASM -->
     <ItemDefinitionGroup>
         <MASM>
-            <PreprocessorDefinitions Condition="'$(Configuration)'=='Debug'">_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <PreprocessorDefinitions Condition="'$(Configuration)'=='Release'">NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <PreprocessorDefinitions Condition="'$(Platform)'=='x64'">_M_X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <PreprocessorDefinitions Condition="'$(Platform)'=='Win32'">_M_IX86;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64'">_M_ARM64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Configuration.Contains(`Debug`))'">_DEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Configuration.Contains(`Release`))'">NDEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Platform)'=='x64' Or '$(Platform)'=='ARM64EC'">_M_X64=100;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Platform)'=='Win32'">_M_IX86=600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64'">_M_ARM64=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64EC'">_M_ARM64EC=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Platform)'=='ARM'">_M_ARM=7;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Platform)'=='x64' Or '$(Platform)'=='ARM64' Or '$(Platform)'=='ARM64EC'">_WIN64=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
             <PreprocessorDefinitions>_KNSOFT_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
             <PreprocessorDefinitions>MSB_CONFIGURATION_NAME="$(ConfigurationName)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
             <PreprocessorDefinitions>MSB_MSBUILD_VERSION="$(MSBuildVersion)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -78,11 +84,14 @@
             <PreprocessorDefinitions>MSB_TARGET_PLATFORM_VERSION="$(TargetPlatformVersion)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
         </MASM>
         <MARMASM>
-            <PreprocessorDefinitions Condition="'$(Configuration)'=='Debug'">_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <PreprocessorDefinitions Condition="'$(Configuration)'=='Release'">NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <PreprocessorDefinitions Condition="'$(Platform)'=='x64'">_M_X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <PreprocessorDefinitions Condition="'$(Platform)'=='Win32'">_M_IX86;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64'">_M_ARM64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Configuration.Contains(`Debug`))'">_DEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Configuration.Contains(`Release`))'">NDEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Platform)'=='x64' Or '$(Platform)'=='ARM64EC'">_M_X64=100;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Platform)'=='Win32'">_M_IX86=600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64'">_M_ARM64=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64EC'">_M_ARM64EC=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Platform)'=='ARM'">_M_ARM=7;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(Platform)'=='x64' Or '$(Platform)'=='ARM64' Or '$(Platform)'=='ARM64EC'">_WIN64=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
             <PreprocessorDefinitions>_KNSOFT_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
             <PreprocessorDefinitions>MSB_CONFIGURATION_NAME="$(ConfigurationName)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
             <PreprocessorDefinitions>MSB_MSBUILD_VERSION="$(MSBuildVersion)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
