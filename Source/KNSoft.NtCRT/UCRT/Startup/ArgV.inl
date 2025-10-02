@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "../NtCRT.inl"
+#include "../../NtCRT.inl"
 
 EXTERN_C_START
 

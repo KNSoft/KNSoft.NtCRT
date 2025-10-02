@@ -30,6 +30,27 @@ _GS_GetTickCount64(VOID)
 #endif
 }
 
+/*
+ * _CRT_* works correctly for CRT only
+ */
+
+FORCEINLINE
+BOOL
+WINAPI
+_CRT_InitializeCriticalSectionEx(
+    _Out_ LPCRITICAL_SECTION lpCriticalSection,
+    _In_ DWORD dwSpinCount,
+    _In_ DWORD Flags)
+{
+#if _CRT_NTDDI_MIN >= NTDDI_VISTA
+    return _Inline_InitializeCriticalSectionEx(lpCriticalSection, dwSpinCount, Flags);
+#else
+    /* So far, none of the calls from CRT use Flags */
+    _ASSERTE(Flags == 0);
+    return _Inline_InitializeCriticalSectionAndSpinCount(lpCriticalSection, dwSpinCount);
+#endif
+}
+
 /* Use inline implementations by KNSoft.NDK */
 
 #define GetCurrentThreadId _Inline_GetCurrentThreadId
@@ -51,7 +72,7 @@ _GS_GetTickCount64(VOID)
 #define EncodePointer _Inline_EncodePointer
 #define DecodePointer _Inline_DecodePointer
 #define InitializeCriticalSectionAndSpinCount _Inline_InitializeCriticalSectionAndSpinCount
-#define InitializeCriticalSectionEx _Inline_InitializeCriticalSectionEx
+#define InitializeCriticalSectionEx _CRT_InitializeCriticalSectionEx
 #define DeleteCriticalSection _Inline_DeleteCriticalSection
 #define EnterCriticalSection _Inline_EnterCriticalSection
 #define LeaveCriticalSection _Inline_LeaveCriticalSection

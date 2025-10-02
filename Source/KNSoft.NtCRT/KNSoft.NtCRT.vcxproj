@@ -167,19 +167,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="Conio\InitCon.inl" />
-    <None Include="Env.inl" />
-    <None Include="Heap.inl" />
-    <None Include="Internal.inl" />
-    <None Include="Lowio.inl" />
-    <None Include="Misc\Func.inl" />
     <None Include="NtCRT.inl" />
     <None Include="packages.config" />
     <None Include="PolyFill.inl" />
-    <None Include="Startup\ArgV.inl" />
-    <None Include="Startup\Misc.inl" />
-    <None Include="Stdio.inl" />
+    <None Include="UCRT\Conio\InitCon.inl" />
+    <None Include="UCRT\Env.inl" />
+    <None Include="UCRT\Heap.inl" />
+    <None Include="UCRT\Internal\Misc.inl" />
+    <None Include="UCRT\Lowio.inl" />
+    <None Include="UCRT\Misc\Func.inl" />
+    <None Include="UCRT\Startup\ArgV.inl" />
+    <None Include="UCRT\Startup\Misc.inl" />
+    <None Include="UCRT\Stdio.inl" />
     <None Include="VCRT\VCRT.inl" />
+    <None Include="WinAPI.inl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="KNSoft.NtCRT.cpp" />
@@ -190,12 +191,12 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\KNSoft.NDK.1.2.32-beta\build\KNSoft.NDK.targets" Condition="Exists('..\packages\KNSoft.NDK.1.2.32-beta\build\KNSoft.NDK.targets')" />
+    <Import Project="..\packages\KNSoft.NDK.1.2.40-beta\build\KNSoft.NDK.targets" Condition="Exists('..\packages\KNSoft.NDK.1.2.40-beta\build\KNSoft.NDK.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\KNSoft.NDK.1.2.32-beta\build\KNSoft.NDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\KNSoft.NDK.1.2.32-beta\build\KNSoft.NDK.targets'))" />
+    <Error Condition="!Exists('..\packages\KNSoft.NDK.1.2.40-beta\build\KNSoft.NDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\KNSoft.NDK.1.2.40-beta\build\KNSoft.NDK.targets'))" />
   </Target>
 </Project>

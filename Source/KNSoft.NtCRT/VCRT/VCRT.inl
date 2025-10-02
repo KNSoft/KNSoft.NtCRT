@@ -20,7 +20,9 @@ EXTERN_C_START
 
 EXTERN_C_END
 
+/* FIXME */
+#if !defined(_M_ARM64)
 #include <locks.cpp>
+#endif
 #include <tncleanup.cpp>
 #include <utility_desktop.cpp>
-// #include <winapi_downlevel.cpp>

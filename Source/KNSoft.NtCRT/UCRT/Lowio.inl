@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "NtCRT.inl"
+#include "../NtCRT.inl"
 
 #include <lowio/close.cpp>
 #include <lowio/commit.cpp>

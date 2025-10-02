@@ -1,46 +1,63 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Startup">
-      <UniqueIdentifier>{639c7979-9f16-497e-a092-4d9e1c39eada}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Stub">
       <UniqueIdentifier>{856b50e9-8983-48ba-a99c-ec83d44b8086}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Misc">
-      <UniqueIdentifier>{12a62ac2-7fdd-42d8-a1a3-019f201fa8fb}</UniqueIdentifier>
     </Filter>
     <Filter Include="VCRT">
       <UniqueIdentifier>{09b9918b-4716-4fdc-89bb-28dfa415a3f9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Conio">
+    <Filter Include="UCRT">
+      <UniqueIdentifier>{3cf0fb2f-396b-4fa0-a513-a8b165890a5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UCRT\Conio">
       <UniqueIdentifier>{283b1119-6011-416d-8b51-e0bcd1722a96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UCRT\Internal">
+      <UniqueIdentifier>{c0e2ff55-1fad-49d4-a0bc-81cfe1171d44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UCRT\Misc">
+      <UniqueIdentifier>{12a62ac2-7fdd-42d8-a1a3-019f201fa8fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UCRT\Startup">
+      <UniqueIdentifier>{639c7979-9f16-497e-a092-4d9e1c39eada}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="NtCRT.inl" />
-    <None Include="Misc\Func.inl">
-      <Filter>Misc</Filter>
-    </None>
     <None Include="VCRT\VCRT.inl">
       <Filter>VCRT</Filter>
     </None>
     <None Include="PolyFill.inl" />
-    <None Include="Heap.inl" />
-    <None Include="Lowio.inl" />
-    <None Include="Internal.inl" />
-    <None Include="Stdio.inl" />
-    <None Include="Startup\ArgV.inl">
-      <Filter>Startup</Filter>
-    </None>
-    <None Include="Startup\Misc.inl">
-      <Filter>Startup</Filter>
-    </None>
-    <None Include="Env.inl" />
-    <None Include="Conio\InitCon.inl">
-      <Filter>Conio</Filter>
-    </None>
     <None Include="packages.config" />
+    <None Include="WinAPI.inl" />
+    <None Include="UCRT\Conio\InitCon.inl">
+      <Filter>UCRT\Conio</Filter>
+    </None>
+    <None Include="UCRT\Internal\Misc.inl">
+      <Filter>UCRT\Internal</Filter>
+    </None>
+    <None Include="UCRT\Misc\Func.inl">
+      <Filter>UCRT\Misc</Filter>
+    </None>
+    <None Include="UCRT\Startup\ArgV.inl">
+      <Filter>UCRT\Startup</Filter>
+    </None>
+    <None Include="UCRT\Startup\Misc.inl">
+      <Filter>UCRT\Startup</Filter>
+    </None>
+    <None Include="UCRT\Env.inl">
+      <Filter>UCRT</Filter>
+    </None>
+    <None Include="UCRT\Heap.inl">
+      <Filter>UCRT</Filter>
+    </None>
+    <None Include="UCRT\Lowio.inl">
+      <Filter>UCRT</Filter>
+    </None>
+    <None Include="UCRT\Stdio.inl">
+      <Filter>UCRT</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="KNSoft.NtCRT.cpp" />

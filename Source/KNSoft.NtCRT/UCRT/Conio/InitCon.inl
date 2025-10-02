@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "../NtCRT.inl"
+#include "../../NtCRT.inl"
 
 /* See also: $(UCRTContentRoot)Source\$(TargetUniversalCRTVersion)\ucrt\conio\initcon.cpp */
 

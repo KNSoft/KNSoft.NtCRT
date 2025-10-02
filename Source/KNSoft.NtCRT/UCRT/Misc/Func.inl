@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "../NtCRT.inl"
+#include "../../NtCRT.inl"
 
 #include <misc/invalid_parameter.cpp>
 
