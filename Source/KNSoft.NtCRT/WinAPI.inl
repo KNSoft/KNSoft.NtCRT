@@ -12,6 +12,12 @@ EXTERN_C_START
 
 namespace
 {
+    enum Crt_Type : unsigned
+    {
+        Crt_Ucrt = 0,
+        Crt_Vcrt
+    };
+
     /* System DLLs */
 
     enum SysDll_Id : unsigned
@@ -257,12 +263,16 @@ static
 void*
 __cdecl
 try_get_function_slow(
-    SysAPI_Id ApiId) throw()
+    SysAPI_Id ApiId,
+    Crt_Type CrtType) throw()
 {
     void* new_fp = try_get_proc_address(&SysAPIs[ApiId].Name, SysAPIs[ApiId].DllId);
     void* cached_fp;
 
-    __acrt_lock(__acrt_function_pointer_table_lock);
+    if (CrtType == Crt_Ucrt)
+    {
+        __acrt_lock(__acrt_function_pointer_table_lock);
+    }
 
     if (!new_fp)
     {
@@ -281,7 +291,10 @@ try_get_function_slow(
     }
 
 end:
-    __acrt_unlock(__acrt_function_pointer_table_lock);
+    if (CrtType == Crt_Ucrt)
+    {
+        __acrt_unlock(__acrt_function_pointer_table_lock);
+    }
     return new_fp;
 }
 
@@ -290,7 +303,8 @@ __forceinline
 void*
 __cdecl
 try_get_function(
-    SysAPI_Id ApiId) throw()
+    SysAPI_Id ApiId,
+    Crt_Type CrtType) throw()
 {
     void* cached_fp = ReadPointerNoFence(SysAPI_Pointers + ApiId);
     if (cached_fp)
@@ -301,7 +315,7 @@ try_get_function(
         return NULL;
     } else
     {
-        return try_get_function_slow(ApiId);
+        return try_get_function_slow(ApiId, CrtType);
     }
 }
 
@@ -315,14 +329,14 @@ get_function(
     return ReadPointerNoFence(SysAPI_Pointers + ApiId);
 }
 
-#define TRY_GET_API(x) ((decltype(x)*)try_get_function(_CRT_CONCATENATE(SysAPI_, x)))
+#define TRY_GET_API(x, t) ((decltype(x)*)try_get_function(_CRT_CONCATENATE(SysAPI_, x), t))
 #define GET_API(x) ((decltype(x)*)get_function(_CRT_CONCATENATE(SysAPI_, x)))
 
 /* UCRT Thunks */
 
 BOOL WINAPI __acrt_AreFileApisANSI()
 {
-    if (auto const are_file_apis_ansi = TRY_GET_API(AreFileApisANSI))
+    if (auto const are_file_apis_ansi = TRY_GET_API(AreFileApisANSI, Crt_Ucrt))
     {
         return are_file_apis_ansi();
     }
@@ -344,7 +358,7 @@ int WINAPI __acrt_CompareStringEx(
     LPARAM           const param
 )
 {
-    if (auto const compare_string_ex = TRY_GET_API(CompareStringEx))
+    if (auto const compare_string_ex = TRY_GET_API(CompareStringEx, Crt_Ucrt))
     {
         // On WCOS devices, CompareStringEx may calls into icu.dll which is an OS component using the UCRT.
         // If icu.dll calls any UCRT export under OS mode (ex: malloc), then CompareStringEx will return under Prog Mode even if
@@ -367,7 +381,10 @@ static BOOL enum_system_locales_ex_nolock(
 
     static_enum_proc = enum_proc;
     BOOL const result = EnumSystemLocalesW(
-        [](LPWSTR locale_string) { return (static_enum_proc)(locale_string, 0, 0); },
+        [](LPWSTR locale_string)
+    {
+        return (static_enum_proc)(locale_string, 0, 0);
+    },
         LCID_INSTALLED);
     static_enum_proc = nullptr;
 
@@ -381,7 +398,7 @@ BOOL WINAPI __acrt_EnumSystemLocalesEx(
     LPVOID            const reserved
 )
 {
-    if (auto const enum_system_locales_ex = TRY_GET_API(EnumSystemLocalesEx))
+    if (auto const enum_system_locales_ex = TRY_GET_API(EnumSystemLocalesEx, Crt_Ucrt))
     {
         return enum_system_locales_ex(enum_proc, flags, param, reserved);
     }
@@ -445,7 +462,7 @@ int WINAPI __acrt_GetDateFormatEx(
     LPCWSTR           const calendar
 )
 {
-    if (auto const get_date_format_ex = TRY_GET_API(GetDateFormatEx))
+    if (auto const get_date_format_ex = TRY_GET_API(GetDateFormatEx, Crt_Ucrt))
     {
         return get_date_format_ex(locale_name, flags, date, format, buffer, buffer_count, calendar);
     }
@@ -458,7 +475,7 @@ int WINAPI __acrt_GetTempPath2W(
     LPWSTR lpBuffer
 )
 {
-    if (auto const get_temp_path2w = TRY_GET_API(GetTempPath2W))
+    if (auto const get_temp_path2w = TRY_GET_API(GetTempPath2W, Crt_Ucrt))
     {
         return get_temp_path2w(nBufferLength, lpBuffer);
     }
@@ -472,7 +489,7 @@ BOOL WINAPI __acrt_GetFileInformationByName(
     ULONG FileInfoBufferSize
 )
 {
-    if (auto const get_file_info = TRY_GET_API(GetFileInformationByName))
+    if (auto const get_file_info = TRY_GET_API(GetFileInformationByName, Crt_Ucrt))
     {
         return get_file_info(FileName, (FILE_INFO_BY_NAME_CLASS)FileInformationClass, FileInfoBuffer, FileInfoBufferSize);
     }
@@ -481,7 +498,7 @@ BOOL WINAPI __acrt_GetFileInformationByName(
 
 DWORD64 WINAPI __acrt_GetEnabledXStateFeatures()
 {
-    if (auto const get_enabled_xstate_features = TRY_GET_API(GetEnabledXStateFeatures))
+    if (auto const get_enabled_xstate_features = TRY_GET_API(GetEnabledXStateFeatures, Crt_Ucrt))
     {
         return get_enabled_xstate_features();
     }
@@ -496,7 +513,7 @@ int WINAPI __acrt_GetLocaleInfoEx(
     int     const data_count
 )
 {
-    if (auto const get_locale_info_ex = TRY_GET_API(GetLocaleInfoEx))
+    if (auto const get_locale_info_ex = TRY_GET_API(GetLocaleInfoEx, Crt_Ucrt))
     {
         return get_locale_info_ex(locale_name, lc_type, data, data_count);
     }
@@ -506,7 +523,7 @@ int WINAPI __acrt_GetLocaleInfoEx(
 
 VOID WINAPI __acrt_GetSystemTimePreciseAsFileTime(LPFILETIME const system_time)
 {
-    if (auto const get_system_time_precise_as_file_time = TRY_GET_API(GetSystemTimePreciseAsFileTime))
+    if (auto const get_system_time_precise_as_file_time = TRY_GET_API(GetSystemTimePreciseAsFileTime, Crt_Ucrt))
     {
         return get_system_time_precise_as_file_time(system_time);
     }
@@ -523,7 +540,7 @@ int WINAPI __acrt_GetTimeFormatEx(
     int               const buffer_count
 )
 {
-    if (auto const get_time_format_ex = TRY_GET_API(GetTimeFormatEx))
+    if (auto const get_time_format_ex = TRY_GET_API(GetTimeFormatEx, Crt_Ucrt))
     {
         return get_time_format_ex(locale_name, flags, time, format, buffer, buffer_count);
     }
@@ -536,7 +553,7 @@ int WINAPI __acrt_GetUserDefaultLocaleName(
     int    const locale_name_count
 )
 {
-    if (auto const get_user_default_locale_name = TRY_GET_API(GetUserDefaultLocaleName))
+    if (auto const get_user_default_locale_name = TRY_GET_API(GetUserDefaultLocaleName, Crt_Ucrt))
     {
         return get_user_default_locale_name(locale_name, locale_name_count);
     }
@@ -549,7 +566,7 @@ BOOL WINAPI __acrt_GetXStateFeaturesMask(
     PDWORD64 const feature_mask
 )
 {
-    if (auto const get_xstate_features_mask = TRY_GET_API(GetXStateFeaturesMask))
+    if (auto const get_xstate_features_mask = TRY_GET_API(GetXStateFeaturesMask, Crt_Ucrt))
     {
         return get_xstate_features_mask(context, feature_mask);
     }
@@ -568,7 +585,7 @@ BOOL WINAPI __acrt_InitializeCriticalSectionEx(
 
 BOOL WINAPI __acrt_IsValidLocaleName(LPCWSTR const locale_name)
 {
-    if (auto const is_valid_locale_name = TRY_GET_API(IsValidLocaleName))
+    if (auto const is_valid_locale_name = TRY_GET_API(IsValidLocaleName, Crt_Ucrt))
     {
         return is_valid_locale_name(locale_name);
     }
@@ -588,7 +605,7 @@ int WINAPI __acrt_LCMapStringEx(
     LPARAM           const sort_handle
 )
 {
-    if (auto const lc_map_string_ex = TRY_GET_API(LCMapStringEx))
+    if (auto const lc_map_string_ex = TRY_GET_API(LCMapStringEx, Crt_Ucrt))
     {
         return lc_map_string_ex(locale_name, flags, source, source_count, destination, destination_count, version, reserved, sort_handle);
     }
@@ -603,7 +620,7 @@ int WINAPI __acrt_LCIDToLocaleName(
     DWORD  const flags
 )
 {
-    if (auto const lcid_to_locale_name = TRY_GET_API(LCIDToLocaleName))
+    if (auto const lcid_to_locale_name = TRY_GET_API(LCIDToLocaleName, Crt_Ucrt))
     {
         return lcid_to_locale_name(locale, name, name_count, flags);
     }
@@ -616,7 +633,7 @@ LCID WINAPI __acrt_LocaleNameToLCID(
     DWORD   const flags
 )
 {
-    if (auto const locale_name_to_lcid = TRY_GET_API(LocaleNameToLCID))
+    if (auto const locale_name_to_lcid = TRY_GET_API(LocaleNameToLCID, Crt_Ucrt))
     {
         return locale_name_to_lcid(name, flags);
     }
@@ -630,7 +647,7 @@ PVOID WINAPI __acrt_LocateXStateFeature(
     PDWORD   const length
 )
 {
-    if (auto const locate_xstate_feature = TRY_GET_API(LocateXStateFeature))
+    if (auto const locate_xstate_feature = TRY_GET_API(LocateXStateFeature, Crt_Ucrt))
     {
         return locate_xstate_feature(content, feature_id, length);
     }
@@ -645,7 +662,7 @@ int WINAPI __acrt_MessageBoxA(
     UINT   const type
 )
 {
-    if (auto const message_box_a = TRY_GET_API(MessageBoxA))
+    if (auto const message_box_a = TRY_GET_API(MessageBoxA, Crt_Ucrt))
     {
         return message_box_a(hwnd, text, caption, type);
     }
@@ -660,7 +677,7 @@ int WINAPI __acrt_MessageBoxW(
     UINT    const type
 )
 {
-    if (auto const message_box_w = TRY_GET_API(MessageBoxW))
+    if (auto const message_box_w = TRY_GET_API(MessageBoxW, Crt_Ucrt))
     {
         return message_box_w(hwnd, text, caption, type);
     }
@@ -673,7 +690,7 @@ BOOLEAN WINAPI __acrt_RtlGenRandom(
     ULONG const buffer_count
 )
 {
-    if (auto const rtl_gen_random = TRY_GET_API(SystemFunction036))
+    if (auto const rtl_gen_random = TRY_GET_API(SystemFunction036, Crt_Ucrt))
     {
         return rtl_gen_random(buffer, buffer_count);
     }
@@ -683,7 +700,7 @@ BOOLEAN WINAPI __acrt_RtlGenRandom(
 
 HRESULT WINAPI __acrt_RoInitialize(RO_INIT_TYPE const init_type)
 {
-    if (auto const ro_initialize = TRY_GET_API(RoInitialize))
+    if (auto const ro_initialize = TRY_GET_API(RoInitialize, Crt_Ucrt))
     {
         return ro_initialize(init_type);
     }
@@ -693,7 +710,7 @@ HRESULT WINAPI __acrt_RoInitialize(RO_INIT_TYPE const init_type)
 
 void WINAPI __acrt_RoUninitialize()
 {
-    if (auto const ro_uninitialize = TRY_GET_API(RoUninitialize))
+    if (auto const ro_uninitialize = TRY_GET_API(RoUninitialize, Crt_Ucrt))
     {
         return ro_uninitialize();
     }
@@ -703,7 +720,7 @@ void WINAPI __acrt_RoUninitialize()
 
 LONG WINAPI __acrt_AppPolicyGetProcessTerminationMethodInternal(_Out_ AppPolicyProcessTerminationMethod* policy)
 {
-    if (auto const app_policy_get_process_terminaton_method_claims = TRY_GET_API(AppPolicyGetProcessTerminationMethod))
+    if (auto const app_policy_get_process_terminaton_method_claims = TRY_GET_API(AppPolicyGetProcessTerminationMethod, Crt_Ucrt))
     {
         return app_policy_get_process_terminaton_method_claims(GetCurrentThreadEffectiveToken(), policy);
     }
@@ -713,7 +730,7 @@ LONG WINAPI __acrt_AppPolicyGetProcessTerminationMethodInternal(_Out_ AppPolicyP
 
 LONG WINAPI __acrt_AppPolicyGetThreadInitializationTypeInternal(_Out_ AppPolicyThreadInitializationType* policy)
 {
-    if (auto const app_policy_get_thread_initialization_type_claims = TRY_GET_API(AppPolicyGetThreadInitializationType))
+    if (auto const app_policy_get_thread_initialization_type_claims = TRY_GET_API(AppPolicyGetThreadInitializationType, Crt_Ucrt))
     {
         return app_policy_get_thread_initialization_type_claims(GetCurrentThreadEffectiveToken(), policy);
     }
@@ -723,7 +740,7 @@ LONG WINAPI __acrt_AppPolicyGetThreadInitializationTypeInternal(_Out_ AppPolicyT
 
 LONG WINAPI __acrt_AppPolicyGetShowDeveloperDiagnosticInternal(_Out_ AppPolicyShowDeveloperDiagnostic* policy)
 {
-    if (auto const app_policy_get_show_developer_diagnostic_claims = TRY_GET_API(AppPolicyGetShowDeveloperDiagnostic))
+    if (auto const app_policy_get_show_developer_diagnostic_claims = TRY_GET_API(AppPolicyGetShowDeveloperDiagnostic, Crt_Ucrt))
     {
         return app_policy_get_show_developer_diagnostic_claims(GetCurrentThreadEffectiveToken(), policy);
     }
@@ -733,7 +750,7 @@ LONG WINAPI __acrt_AppPolicyGetShowDeveloperDiagnosticInternal(_Out_ AppPolicySh
 
 LONG WINAPI __acrt_AppPolicyGetWindowingModelInternal(_Out_ AppPolicyWindowingModel* policy)
 {
-    if (auto const app_policy_get_windowing_model_claims = TRY_GET_API(AppPolicyGetWindowingModel))
+    if (auto const app_policy_get_windowing_model_claims = TRY_GET_API(AppPolicyGetWindowingModel, Crt_Ucrt))
     {
         return app_policy_get_windowing_model_claims(GetCurrentThreadEffectiveToken(), policy);
     }
@@ -743,7 +760,7 @@ LONG WINAPI __acrt_AppPolicyGetWindowingModelInternal(_Out_ AppPolicyWindowingMo
 
 BOOL WINAPI __acrt_SetThreadStackGuarantee(PULONG const stack_size_in_bytes)
 {
-    if (auto const set_thread_stack_guarantee = TRY_GET_API(SetThreadStackGuarantee))
+    if (auto const set_thread_stack_guarantee = TRY_GET_API(SetThreadStackGuarantee, Crt_Ucrt))
     {
         return set_thread_stack_guarantee(stack_size_in_bytes);
     }
@@ -755,8 +772,8 @@ bool __cdecl __acrt_can_show_message_box()
 {
     bool can_show_message_box = false;
     if (__acrt_get_windowing_model_policy() == windowing_model_policy_hwnd
-        && TRY_GET_API(MessageBoxA) != nullptr
-        && TRY_GET_API(MessageBoxW) != nullptr)
+        && TRY_GET_API(MessageBoxA, Crt_Ucrt) != nullptr
+        && TRY_GET_API(MessageBoxW, Crt_Ucrt) != nullptr)
     {
         can_show_message_box = true;
     }
@@ -765,7 +782,7 @@ bool __cdecl __acrt_can_show_message_box()
 
 bool __cdecl __acrt_can_use_vista_locale_apis()
 {
-    return TRY_GET_API(CompareStringEx) != nullptr;
+    return TRY_GET_API(CompareStringEx, Crt_Ucrt) != nullptr;
 }
 
 // This function simply attempts to get each of the locale-related APIs.  This
@@ -774,32 +791,32 @@ bool __cdecl __acrt_can_use_vista_locale_apis()
 // the locale lock is held.
 void __cdecl __acrt_eagerly_load_locale_apis()
 {
-    TRY_GET_API(AreFileApisANSI);
-    TRY_GET_API(CompareStringEx);
-    TRY_GET_API(EnumSystemLocalesEx);
-    TRY_GET_API(GetDateFormatEx);
-    TRY_GET_API(GetLocaleInfoEx);
-    TRY_GET_API(GetTimeFormatEx);
-    TRY_GET_API(GetUserDefaultLocaleName);
-    TRY_GET_API(IsValidLocaleName);
-    TRY_GET_API(LCMapStringEx);
-    TRY_GET_API(LCIDToLocaleName);
-    TRY_GET_API(LocaleNameToLCID);
+    TRY_GET_API(AreFileApisANSI, Crt_Ucrt);
+    TRY_GET_API(CompareStringEx, Crt_Ucrt);
+    TRY_GET_API(EnumSystemLocalesEx, Crt_Ucrt);
+    TRY_GET_API(GetDateFormatEx, Crt_Ucrt);
+    TRY_GET_API(GetLocaleInfoEx, Crt_Ucrt);
+    TRY_GET_API(GetTimeFormatEx, Crt_Ucrt);
+    TRY_GET_API(GetUserDefaultLocaleName, Crt_Ucrt);
+    TRY_GET_API(IsValidLocaleName, Crt_Ucrt);
+    TRY_GET_API(LCMapStringEx, Crt_Ucrt);
+    TRY_GET_API(LCIDToLocaleName, Crt_Ucrt);
+    TRY_GET_API(LocaleNameToLCID, Crt_Ucrt);
 }
 
 bool __cdecl __acrt_tls2_supported()
 {
-    return TRY_GET_API(FlsGetValue2) != nullptr;
+    return TRY_GET_API(FlsGetValue2, Crt_Ucrt) != nullptr;
 }
 
 bool __cdecl __acrt_can_use_xstate_apis()
 {
-    return TRY_GET_API(LocateXStateFeature) != nullptr;
+    return TRY_GET_API(LocateXStateFeature, Crt_Ucrt) != nullptr;
 }
 
 HWND __cdecl __acrt_get_parent_window()
 {
-    auto const get_active_window = TRY_GET_API(GetActiveWindow);
+    auto const get_active_window = TRY_GET_API(GetActiveWindow, Crt_Ucrt);
     if (!get_active_window)
     {
         return nullptr;
@@ -811,7 +828,7 @@ HWND __cdecl __acrt_get_parent_window()
         return nullptr;
     }
 
-    auto const get_last_active_popup = TRY_GET_API(GetLastActivePopup);
+    auto const get_last_active_popup = TRY_GET_API(GetLastActivePopup, Crt_Ucrt);
     if (!get_last_active_popup)
     {
         return active_window;
@@ -822,13 +839,13 @@ HWND __cdecl __acrt_get_parent_window()
 
 bool __cdecl __acrt_is_interactive()
 {
-    auto const get_process_window_station = TRY_GET_API(GetProcessWindowStation);
+    auto const get_process_window_station = TRY_GET_API(GetProcessWindowStation, Crt_Ucrt);
     if (!get_process_window_station)
     {
         return true;
     }
 
-    auto const get_user_object_information = TRY_GET_API(GetUserObjectInformationW);
+    auto const get_user_object_information = TRY_GET_API(GetUserObjectInformationW, Crt_Ucrt);
     if (!get_user_object_information)
     {
         return true;
@@ -856,12 +873,9 @@ bool __cdecl __acrt_is_interactive()
 
 /* VCRT Thunks */
 
-/* FIXME */
-#if !defined(_M_ARM64)
-
 DWORD __cdecl __vcrt_FlsAlloc(_In_opt_ PFLS_CALLBACK_FUNCTION const callback)
 {
-    if (auto const fls_alloc = TRY_GET_API(FlsAlloc))
+    if (auto const fls_alloc = TRY_GET_API(FlsAlloc, Crt_Vcrt))
     {
         return fls_alloc(callback);
     }
@@ -871,7 +885,7 @@ DWORD __cdecl __vcrt_FlsAlloc(_In_opt_ PFLS_CALLBACK_FUNCTION const callback)
 
 BOOL __cdecl __vcrt_FlsFree(_In_ DWORD const fls_index)
 {
-    if (auto const fls_free = TRY_GET_API(FlsFree))
+    if (auto const fls_free = TRY_GET_API(FlsFree, Crt_Vcrt))
     {
         return fls_free(fls_index);
     }
@@ -881,7 +895,7 @@ BOOL __cdecl __vcrt_FlsFree(_In_ DWORD const fls_index)
 
 PVOID __cdecl __vcrt_FlsGetValue(_In_ DWORD const fls_index)
 {
-    if (auto const fls_get_value = TRY_GET_API(FlsGetValue))
+    if (auto const fls_get_value = TRY_GET_API(FlsGetValue, Crt_Vcrt))
     {
         return fls_get_value(fls_index);
     }
@@ -891,7 +905,7 @@ PVOID __cdecl __vcrt_FlsGetValue(_In_ DWORD const fls_index)
 
 BOOL __cdecl __vcrt_FlsSetValue(_In_ DWORD const fls_index, _In_opt_ PVOID const fls_data)
 {
-    if (auto const fls_set_value = TRY_GET_API(FlsSetValue))
+    if (auto const fls_set_value = TRY_GET_API(FlsSetValue, Crt_Vcrt))
     {
         return fls_set_value(fls_index, fls_data);
     }
@@ -907,7 +921,5 @@ BOOL __cdecl __vcrt_InitializeCriticalSectionEx(
 {
     return _CRT_InitializeCriticalSectionEx(critical_section, spin_count, flags);
 }
-
-#endif /* !defined(_M_ARM64) */
 
 EXTERN_C_END

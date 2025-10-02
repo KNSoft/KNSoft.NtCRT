@@ -2,7 +2,7 @@
 
 #include <SdkDdkVer.h>
 
-/* CRT Build */
+/* CRT Windows Build */
 #define _CRTBLD
 #define _VCRT_BUILD
 #define _CORECRT_BUILD
@@ -11,6 +11,7 @@
 
 /* CRT Settings */
 #ifdef _WINDLL
+// #define CRTDLL 1
 #ifndef _DLL
 // #error
 #endif

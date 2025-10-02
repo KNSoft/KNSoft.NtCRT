@@ -72,7 +72,6 @@ _CRT_InitializeCriticalSectionEx(
 #define EncodePointer _Inline_EncodePointer
 #define DecodePointer _Inline_DecodePointer
 #define InitializeCriticalSectionAndSpinCount _Inline_InitializeCriticalSectionAndSpinCount
-#define InitializeCriticalSectionEx _CRT_InitializeCriticalSectionEx
 #define DeleteCriticalSection _Inline_DeleteCriticalSection
 #define EnterCriticalSection _Inline_EnterCriticalSection
 #define LeaveCriticalSection _Inline_LeaveCriticalSection
