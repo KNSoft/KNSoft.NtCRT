@@ -24,3 +24,4 @@ EXTERN_C_END
 #include <tncleanup.cpp>
 #include <utility_desktop.cpp>
 #include <per_thread_data.cpp>
+#include <std_type_info.cpp>

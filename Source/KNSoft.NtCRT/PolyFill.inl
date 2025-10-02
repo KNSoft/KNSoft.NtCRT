@@ -35,6 +35,29 @@ _GS_GetTickCount64(VOID)
  */
 
 FORCEINLINE
+_Must_inspect_result_
+BOOL
+WINAPI
+_CRT_InitializeCriticalSectionAndSpinCount(
+    _Out_ LPCRITICAL_SECTION lpCriticalSection,
+    _In_ DWORD dwSpinCount)
+{
+#if _CRT_NTDDI_MIN >= NTDDI_VISTA
+    RtlInitializeCriticalSectionAndSpinCount(lpCriticalSection, dwSpinCount);
+    return TRUE;
+#else
+    NTSTATUS Status = RtlInitializeCriticalSectionAndSpinCount(lpCriticalSection, dwSpinCount);
+    if (NT_SUCCESS(Status))
+    {
+        return TRUE;
+    }
+
+    _Inline_BaseSetLastNTError(Status);
+    return FALSE;
+#endif
+}
+
+FORCEINLINE
 BOOL
 WINAPI
 _CRT_InitializeCriticalSectionEx(
@@ -46,9 +69,51 @@ _CRT_InitializeCriticalSectionEx(
     return _Inline_InitializeCriticalSectionEx(lpCriticalSection, dwSpinCount, Flags);
 #else
     /* So far, none of the calls from CRT use Flags */
-    _ASSERTE(Flags == 0);
-    return _Inline_InitializeCriticalSectionAndSpinCount(lpCriticalSection, dwSpinCount);
+    ASSERT(Flags == 0);
+    return _CRT_InitializeCriticalSectionAndSpinCount(lpCriticalSection, dwSpinCount);
 #endif
+}
+
+FORCEINLINE
+BOOL
+WINAPI
+_CRT_FreeLibrary(
+    _In_ HMODULE hLibModule)
+{
+    ASSERT(!LDR_IS_RESOURCE(hLibModule));
+    return NT_SUCCESS(LdrUnloadDll(hLibModule));
+}
+
+FORCEINLINE
+FARPROC
+WINAPI
+_CRT_GetProcAddress(
+    _In_ HMODULE hModule,
+    _In_ LPCSTR lpProcName)
+{
+    NTSTATUS Status;
+    ANSI_STRING ProcName, *Name;
+    ULONG ProcOridinal;
+    PVOID Address;
+
+    if ((UINT_PTR)lpProcName > MAXWORD)
+    {
+        Name = &ProcName;
+        _Inline_RtlInitAnsiString(Name, lpProcName);
+        ProcOridinal = 0;
+    } else
+    {
+        Name = NULL;
+        ProcOridinal = (ULONG)(ULONG_PTR)lpProcName;
+    }
+    Status = LdrGetProcedureAddress(hModule, Name, ProcOridinal, &Address);
+    if (NT_SUCCESS(Status))
+    {
+        return (FARPROC)Address;
+    }
+
+    _Inline_BaseSetLastNTError(Status);
+    return NULL;
 }
 
 /* Use inline implementations by KNSoft.NDK */
@@ -60,6 +125,8 @@ _CRT_InitializeCriticalSectionEx(
 #define FreeEnvironmentStringsW _Inline_FreeEnvironmentStringsW
 #define GetStartupInfoW _Inline_GetStartupInfoW
 #define GetModuleHandleW _Inline_GetModuleHandleW
+#define GetProcAddress _CRT_GetProcAddress
+#define FreeLibrary _CRT_FreeLibrary
 #define IsDebuggerPresent _Inline_IsDebuggerPresent
 #define ExitProcess _Inline_ExitProcess
 #define TerminateProcess _Inline_TerminateProcess
@@ -71,7 +138,7 @@ _CRT_InitializeCriticalSectionEx(
 
 #define EncodePointer _Inline_EncodePointer
 #define DecodePointer _Inline_DecodePointer
-#define InitializeCriticalSectionAndSpinCount _Inline_InitializeCriticalSectionAndSpinCount
+#define InitializeCriticalSectionAndSpinCount _CRT_InitializeCriticalSectionAndSpinCount
 #define DeleteCriticalSection _Inline_DeleteCriticalSection
 #define EnterCriticalSection _Inline_EnterCriticalSection
 #define LeaveCriticalSection _Inline_LeaveCriticalSection

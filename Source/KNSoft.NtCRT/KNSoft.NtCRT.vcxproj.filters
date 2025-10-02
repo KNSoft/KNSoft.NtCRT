@@ -69,5 +69,8 @@
     <ClInclude Include="Stub\corecrt_internal_state_isolation.h">
       <Filter>Stub</Filter>
     </ClInclude>
+    <ClInclude Include="Stub\undname.h">
+      <Filter>Stub</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

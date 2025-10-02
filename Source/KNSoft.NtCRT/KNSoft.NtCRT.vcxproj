@@ -175,6 +175,7 @@
   <ItemGroup>
     <ClInclude Include="Stub\corecrt_internal_ffs.h" />
     <ClInclude Include="Stub\corecrt_internal_state_isolation.h" />
+    <ClInclude Include="Stub\undname.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
