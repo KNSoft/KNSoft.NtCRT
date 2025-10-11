@@ -29,7 +29,6 @@
       <Filter>VCRT</Filter>
     </None>
     <None Include="PolyFill.inl" />
-    <None Include="packages.config" />
     <None Include="WinAPI.inl" />
     <None Include="UCRT\Conio\InitCon.inl">
       <Filter>UCRT\Conio</Filter>
@@ -58,6 +57,10 @@
     <None Include="UCRT\Stdio.inl">
       <Filter>UCRT</Filter>
     </None>
+    <None Include="UCRT\FileSystem.inl">
+      <Filter>UCRT</Filter>
+    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="KNSoft.NtCRT.cpp" />
@@ -70,6 +73,9 @@
       <Filter>Stub</Filter>
     </ClInclude>
     <ClInclude Include="Stub\undname.h">
+      <Filter>Stub</Filter>
+    </ClInclude>
+    <ClInclude Include="Stub\faststat.h">
       <Filter>Stub</Filter>
     </ClInclude>
   </ItemGroup>

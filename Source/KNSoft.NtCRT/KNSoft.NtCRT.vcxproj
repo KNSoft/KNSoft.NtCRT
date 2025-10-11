@@ -159,6 +159,7 @@
     <None Include="PolyFill.inl" />
     <None Include="UCRT\Conio\InitCon.inl" />
     <None Include="UCRT\Env.inl" />
+    <None Include="UCRT\FileSystem.inl" />
     <None Include="UCRT\Heap.inl" />
     <None Include="UCRT\Internal\Misc.inl" />
     <None Include="UCRT\Lowio.inl" />
@@ -175,16 +176,17 @@
   <ItemGroup>
     <ClInclude Include="Stub\corecrt_internal_ffs.h" />
     <ClInclude Include="Stub\corecrt_internal_state_isolation.h" />
+    <ClInclude Include="Stub\faststat.h" />
     <ClInclude Include="Stub\undname.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\KNSoft.NDK.1.2.40-beta\build\KNSoft.NDK.targets" Condition="Exists('..\packages\KNSoft.NDK.1.2.40-beta\build\KNSoft.NDK.targets')" />
+    <Import Project="..\packages\KNSoft.NDK.1.2.42-beta\build\KNSoft.NDK.targets" Condition="Exists('..\packages\KNSoft.NDK.1.2.42-beta\build\KNSoft.NDK.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\KNSoft.NDK.1.2.40-beta\build\KNSoft.NDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\KNSoft.NDK.1.2.40-beta\build\KNSoft.NDK.targets'))" />
+    <Error Condition="!Exists('..\packages\KNSoft.NDK.1.2.42-beta\build\KNSoft.NDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\KNSoft.NDK.1.2.42-beta\build\KNSoft.NDK.targets'))" />
   </Target>
 </Project>

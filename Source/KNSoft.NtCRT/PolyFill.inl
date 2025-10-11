@@ -120,14 +120,18 @@ _CRT_GetProcAddress(
 
 #define GetCurrentThreadId _Inline_GetCurrentThreadId
 #define GetCurrentProcessId _Inline_GetCurrentProcessId
+#define GetCurrentThread _Inline_GetCurrentThread
 #define GetCurrentProcess _Inline_GetCurrentProcess
 #define GetEnvironmentStringsW _Inline_GetEnvironmentStringsW
 #define FreeEnvironmentStringsW _Inline_FreeEnvironmentStringsW
 #define GetStartupInfoW _Inline_GetStartupInfoW
 #define GetModuleHandleW _Inline_GetModuleHandleW
+#define GetModuleFileNameW _Inline_GetModuleFileNameW
+#define GetModuleHandleExW _Inline_GetModuleHandleExW
 #define GetProcAddress _CRT_GetProcAddress
 #define FreeLibrary _CRT_FreeLibrary
 #define IsDebuggerPresent _Inline_IsDebuggerPresent
+#define IsThreadAFiber _Inline_IsThreadAFiber
 #define ExitProcess _Inline_ExitProcess
 #define TerminateProcess _Inline_TerminateProcess
 

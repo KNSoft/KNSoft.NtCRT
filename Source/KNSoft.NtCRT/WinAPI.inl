@@ -427,7 +427,6 @@ PVOID WINAPI __acrt_FlsGetValue(DWORD const fls_index)
     return FlsGetValue(fls_index);
 }
 
-extern "C"
 DECLSPEC_GUARDNOCF
 PVOID WINAPI __acrt_FlsGetValue2(DWORD const fls_index)
 {

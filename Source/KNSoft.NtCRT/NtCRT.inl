@@ -41,6 +41,9 @@
 #include <corecrt_internal.h>
 #include <corecrt_internal_state_isolation.h>
 #include <corecrt_internal_stdio.h>
+#include <corecrt_internal_win32_buffer.h>
+#include <corecrt_internal_time.h>
+#include <corecrt_internal_traits.h>
 #include <internal_shared.h>
 #pragma warning(default: 5247 5248)
 

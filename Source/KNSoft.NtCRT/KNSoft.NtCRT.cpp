@@ -5,6 +5,7 @@
 #include "UCRT/Startup/ArgV.inl"
 #include "UCRT/Startup/Misc.inl"
 #include "UCRT/Env.inl"
+#include "UCRT/FileSystem.inl"
 #include "UCRT/Internal/Misc.inl"
 #include "UCRT/Heap.inl"
 #include "UCRT/Lowio.inl"

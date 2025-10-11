@@ -65,6 +65,15 @@ namespace __crt_state_management
         return get_current_state_index(last_error_reset);
     }
 
+    inline size_t get_current_state_index2()
+    {
+#ifdef _CRT_GLOBAL_STATE_ISOLATION
+#error TODO
+#else
+        return 0;
+#endif
+    }
+
 #ifdef _CRT_GLOBAL_STATE_ISOLATION
     void enter_os_call();
     void leave_os_call();
