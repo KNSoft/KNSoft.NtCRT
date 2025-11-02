@@ -6,6 +6,8 @@
  * See also:
  *   $(UCRTContentRoot)Source\$(TargetUniversalCRTVersion)\ucrt\internal\winapi_thunks.cpp
  *   $(VCToolsInstallDir)crt\src\vcruntime\winapi_downlevel.cpp
+ *
+ * FIXME: No FLS inline implementations, fallback to TLS
  */
 
 EXTERN_C_START
@@ -57,16 +59,19 @@ namespace
         SysAPI_AreFileApisANSI,
         SysAPI_CompareStringEx,
         SysAPI_EnumSystemLocalesEx,
+
+        /* TODO: No FLS inline implementations, fallback to TLS
         SysAPI_FlsAlloc,
         SysAPI_FlsFree,
         SysAPI_FlsGetValue,
         SysAPI_FlsGetValue2,
         SysAPI_FlsSetValue,
+        */
+
         SysAPI_GetActiveWindow,
         SysAPI_GetDateFormatEx,
         SysAPI_GetTempPath2W,
         SysAPI_GetFileInformationByName,
-        SysAPI_GetEnabledXStateFeatures,
         SysAPI_GetLastActivePopup,
         SysAPI_GetLocaleInfoEx,
         SysAPI_GetProcessWindowStation,
@@ -101,16 +106,19 @@ namespace
         { RTL_CONSTANT_STRING("AreFileApisANSI"),                       SysDll_Kernel32         },
         { RTL_CONSTANT_STRING("CompareStringEx"),                       SysDll_Kernel32         },
         { RTL_CONSTANT_STRING("EnumSystemLocalesEx"),                   SysDll_Kernel32         },
+
+        /* TODO: No FLS inline implementations, fallback to TLS
         { RTL_CONSTANT_STRING("FlsAlloc"),                              SysDll_Kernel32         },
         { RTL_CONSTANT_STRING("FlsFree"),                               SysDll_Kernel32         },
         { RTL_CONSTANT_STRING("FlsGetValue"),                           SysDll_Kernel32         },
         { RTL_CONSTANT_STRING("FlsGetValue2"),                          SysDll_KernelBase       },
         { RTL_CONSTANT_STRING("FlsSetValue"),                           SysDll_Kernel32         },
+        */
+
         { RTL_CONSTANT_STRING("GetActiveWindow"),                       SysDll_User32           },
         { RTL_CONSTANT_STRING("GetDateFormatEx"),                       SysDll_Kernel32         },
         { RTL_CONSTANT_STRING("GetTempPath2W"),                         SysDll_KernelBase       },
         { RTL_CONSTANT_STRING("GetFileInformationByName"),              SysDll_KernelBase       },
-        { RTL_CONSTANT_STRING("GetEnabledXStateFeatures"),              SysDll_Kernel32         },
         { RTL_CONSTANT_STRING("GetLastActivePopup"),                    SysDll_User32           },
         { RTL_CONSTANT_STRING("GetLocaleInfoEx"),                       SysDll_Kernel32         },
         { RTL_CONSTANT_STRING("GetProcessWindowStation"),               SysDll_User32           },
@@ -183,7 +191,7 @@ try_load_library_from_system_directory(
     NTSTATUS Status;
 
     /* LDR_PATH_SEARCH_SYSTEM32 since NT6.0/6.1 with KB2533623 */
-    if (_NTCRT_NT5_SUPPORT && SharedUserData->NtMajorVersion < 6)
+    if (_KNSOFT_NTCRT_NT5_SUPPORT && SharedUserData->NtMajorVersion < 6)
     {
         goto _Fallback;
     }
@@ -197,8 +205,9 @@ try_load_library_from_system_directory(
         return DllBase;
     }
     if (Status != STATUS_INVALID_PARAMETER ||
-        wcsncmp(DllName->Buffer, L"api-ms-", 7) == 0 ||
-        wcsncmp(DllName->Buffer, L"ext-ms-", 7) == 0)
+        wcsncmp(DllName->Buffer, L"api-ms-", 7) == 0
+        // || wcsncmp(DllName->Buffer, L"ext-ms-", 7) == 0 // No "ext-ms-" currently
+        )
     {
         return NULL;
     }
@@ -247,7 +256,7 @@ try_get_proc_address(
     const ANSI_STRING* Name,
     SysDll_Id DllId) throw()
 {
-    PVOID Pointer;
+    PVOID Address;
     PVOID DllHandle = try_get_module(DllId);
 
     if (DllHandle == NULL)
@@ -255,7 +264,7 @@ try_get_proc_address(
         return NULL;
     }
 
-    return NT_SUCCESS(LdrGetProcedureAddress(DllHandle, (PANSI_STRING)Name, 0, &Pointer)) ? Pointer : NULL;
+    return NT_SUCCESS(LdrGetProcedureAddress(DllHandle, (PANSI_STRING)Name, 0, &Address)) ? Address : NULL;
 }
 
 DECLSPEC_NOINLINE
@@ -409,41 +418,37 @@ BOOL WINAPI __acrt_EnumSystemLocalesEx(
     });
 }
 
+/* FIXME: No FLS inline implementations, fallback to TLS */
+
 // Historically, we needed to conditionally call FLS functions for x86 since the UCRT needed to be consumable down to XP.
 // This is no longer the case as XP is no longer supported, however the enclave implementations of these functions
 // unconditionally call the TLS equivalent APIs (TlsAlloc, etc), hence why these are still kept around
 DWORD WINAPI __acrt_FlsAlloc(PFLS_CALLBACK_FUNCTION const callback)
 {
-    return FlsAlloc(callback);
+    UNREFERENCED_PARAMETER(callback);
+
+    return _Inline_TlsAlloc();
 }
 
 BOOL WINAPI __acrt_FlsFree(DWORD const fls_index)
 {
-    return FlsFree(fls_index);
+    return _Inline_TlsFree(fls_index);
 }
 
 PVOID WINAPI __acrt_FlsGetValue(DWORD const fls_index)
 {
-    return FlsGetValue(fls_index);
+    return _Inline_TlsGetValue(fls_index);
 }
 
 DECLSPEC_GUARDNOCF
 PVOID WINAPI __acrt_FlsGetValue2(DWORD const fls_index)
 {
-#if (defined(_M_ARM64_) || defined(_M_ARM64EC)) && _UCRT_DLL
-    return FlsGetValue2(fls_index);
-#else
-    /*
-    * N.B.: This function must be called after checking __acrt_use_tls2_apis.
-    */
-    auto const flsgetvalue2 = GET_API(FlsGetValue2);
-    return flsgetvalue2(fls_index);
-#endif
+    return _Inline_TlsGetValue2(fls_index);
 }
 
 BOOL WINAPI __acrt_FlsSetValue(DWORD const fls_index, PVOID const fls_data)
 {
-    return FlsSetValue(fls_index, fls_data);
+    return _Inline_TlsSetValue(fls_index, fls_data);
 }
 
 BOOL WINAPI __acrt_IsThreadAFiber()
@@ -497,12 +502,7 @@ BOOL WINAPI __acrt_GetFileInformationByName(
 
 DWORD64 WINAPI __acrt_GetEnabledXStateFeatures()
 {
-    if (auto const get_enabled_xstate_features = TRY_GET_API(GetEnabledXStateFeatures, Crt_Ucrt))
-    {
-        return get_enabled_xstate_features();
-    }
-
-    abort(); // No fallback; callers should check availablility before calling
+    return _Inline_GetEnabledXStateFeatures();
 }
 
 int WINAPI __acrt_GetLocaleInfoEx(
@@ -805,7 +805,10 @@ void __cdecl __acrt_eagerly_load_locale_apis()
 
 bool __cdecl __acrt_tls2_supported()
 {
-    return TRY_GET_API(FlsGetValue2, Crt_Ucrt) != nullptr;
+    // return TRY_GET_API(FlsGetValue2, Crt_Ucrt) != nullptr;
+
+    /* FIXME: No FLS inline implementations, fallback to TLS */
+    return false;
 }
 
 bool __cdecl __acrt_can_use_xstate_apis()
@@ -872,44 +875,28 @@ bool __cdecl __acrt_is_interactive()
 
 /* VCRT Thunks */
 
+/* FIXME: No FLS inline implementations, fallback to TLS */
+
 DWORD __cdecl __vcrt_FlsAlloc(_In_opt_ PFLS_CALLBACK_FUNCTION const callback)
 {
-    if (auto const fls_alloc = TRY_GET_API(FlsAlloc, Crt_Vcrt))
-    {
-        return fls_alloc(callback);
-    }
+    UNREFERENCED_PARAMETER(callback);
 
-    return TlsAlloc();
+    return _Inline_TlsAlloc();
 }
 
 BOOL __cdecl __vcrt_FlsFree(_In_ DWORD const fls_index)
 {
-    if (auto const fls_free = TRY_GET_API(FlsFree, Crt_Vcrt))
-    {
-        return fls_free(fls_index);
-    }
-
-    return TlsFree(fls_index);
+    return _Inline_TlsFree(fls_index);
 }
 
 PVOID __cdecl __vcrt_FlsGetValue(_In_ DWORD const fls_index)
 {
-    if (auto const fls_get_value = TRY_GET_API(FlsGetValue, Crt_Vcrt))
-    {
-        return fls_get_value(fls_index);
-    }
-
-    return TlsGetValue(fls_index);
+    return _Inline_TlsGetValue(fls_index);
 }
 
 BOOL __cdecl __vcrt_FlsSetValue(_In_ DWORD const fls_index, _In_opt_ PVOID const fls_data)
 {
-    if (auto const fls_set_value = TRY_GET_API(FlsSetValue, Crt_Vcrt))
-    {
-        return fls_set_value(fls_index, fls_data);
-    }
-
-    return TlsSetValue(fls_index, fls_data);
+    return _Inline_TlsSetValue(fls_index, fls_data);
 }
 
 BOOL __cdecl __vcrt_InitializeCriticalSectionEx(

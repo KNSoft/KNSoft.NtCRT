@@ -25,11 +25,11 @@
 #if _WIN32_WINNT >= _WIN32_WINNT_WIN6
 #define _CRT_NTDDI_MIN NTDDI_VISTA
 #define _VCRT_WIN32_WINNT _WIN32_WINNT_VISTA
-#define _NTCRT_NT5_SUPPORT FALSE
+#define _KNSOFT_NTCRT_NT5_SUPPORT FALSE
 #else
 #define _CRT_NTDDI_MIN NTDDI_WINXP
 #define _VCRT_WIN32_WINNT _WIN32_WINNT_WINXP
-#define _NTCRT_NT5_SUPPORT TRUE
+#define _KNSOFT_NTCRT_NT5_SUPPORT TRUE
 #endif
 
 #include <KNSoft/NDK/NDK.h>
@@ -40,10 +40,6 @@
 #pragma warning(disable: 5247 5248) // Section 'section-name' is reserved for C++ dynamic initialization.
 #include <corecrt_internal.h>
 #include <corecrt_internal_state_isolation.h>
-#include <corecrt_internal_stdio.h>
-#include <corecrt_internal_win32_buffer.h>
-#include <corecrt_internal_time.h>
-#include <corecrt_internal_traits.h>
 #include <internal_shared.h>
 #pragma warning(default: 5247 5248)
 

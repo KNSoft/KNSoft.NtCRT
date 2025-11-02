@@ -135,6 +135,9 @@ _CRT_GetProcAddress(
 #define ExitProcess _Inline_ExitProcess
 #define TerminateProcess _Inline_TerminateProcess
 
+#define TlsAlloc _Inline_TlsAlloc
+#define TlsFree _Inline_TlsFree
+
 #define GetLastError _Inline_GetLastError
 #define SetLastError _Inline_SetLastError
 
