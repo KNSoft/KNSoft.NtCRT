@@ -527,7 +527,7 @@ VOID WINAPI __acrt_GetSystemTimePreciseAsFileTime(LPFILETIME const system_time)
         return get_system_time_precise_as_file_time(system_time);
     }
 
-    return GetSystemTimeAsFileTime(system_time);
+    return _Inline_GetSystemTimeAsFileTime(system_time);
 }
 
 int WINAPI __acrt_GetTimeFormatEx(
@@ -877,27 +877,47 @@ bool __cdecl __acrt_is_interactive()
 
 /* FIXME: No FLS inline implementations, fallback to TLS */
 
+#if defined(__vcrt_FlsAlloc)
+#undef __vcrt_FlsAlloc
+#define __vcrt_FlsAlloc(unreferenced_callback) _Inline_TlsAlloc()
+#else
 DWORD __cdecl __vcrt_FlsAlloc(_In_opt_ PFLS_CALLBACK_FUNCTION const callback)
 {
     UNREFERENCED_PARAMETER(callback);
 
     return _Inline_TlsAlloc();
 }
+#endif
 
+#if defined(__vcrt_FlsFree)
+#undef __vcrt_FlsFree
+#define __vcrt_FlsFree(fls_index) _Inline_TlsFree(fls_index)
+#else
 BOOL __cdecl __vcrt_FlsFree(_In_ DWORD const fls_index)
 {
     return _Inline_TlsFree(fls_index);
 }
+#endif
 
+#if defined(__vcrt_FlsGetValue)
+#undef __vcrt_FlsGetValue
+#define __vcrt_FlsGetValue(fls_index) _Inline_TlsGetValue(fls_index)
+#else
 PVOID __cdecl __vcrt_FlsGetValue(_In_ DWORD const fls_index)
 {
     return _Inline_TlsGetValue(fls_index);
 }
+#endif
 
+#if defined(__vcrt_FlsSetValue)
+#undef __vcrt_FlsSetValue
+#define __vcrt_FlsSetValue(fls_index, fls_data) _Inline_TlsSetValue(fls_index, fls_data)
+#else
 BOOL __cdecl __vcrt_FlsSetValue(_In_ DWORD const fls_index, _In_opt_ PVOID const fls_data)
 {
     return _Inline_TlsSetValue(fls_index, fls_data);
 }
+#endif
 
 BOOL __cdecl __vcrt_InitializeCriticalSectionEx(
     _Out_ LPCRITICAL_SECTION const critical_section,

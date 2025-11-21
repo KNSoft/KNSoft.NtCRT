@@ -116,6 +116,12 @@ _CRT_GetProcAddress(
     return NULL;
 }
 
+/* Use ntdll UEH instead of kernel32 */
+
+//#define SetUnhandledExceptionFilter RtlSetUnhandledExceptionFilter
+//#define UnhandledExceptionFilter RtlUnhandledExceptionFilter
+
+
 /* Use inline implementations by KNSoft.NDK */
 
 #define GetCurrentThreadId _Inline_GetCurrentThreadId
@@ -137,6 +143,12 @@ _CRT_GetProcAddress(
 
 #define TlsAlloc _Inline_TlsAlloc
 #define TlsFree _Inline_TlsFree
+
+/* TODO: No FLS inline implementations, fallback to TLS */
+#define FlsAlloc(callback) _Inline_TlsAlloc()
+#define FlsFree _Inline_TlsFree
+#define FlsGetValue _Inline_TlsGetValue
+#define FlsSetValue _Inline_TlsSetValue
 
 #define GetLastError _Inline_GetLastError
 #define SetLastError _Inline_SetLastError

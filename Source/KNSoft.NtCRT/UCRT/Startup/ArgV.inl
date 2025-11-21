@@ -81,7 +81,10 @@ __cdecl
 __acrt_uninitialize_command_line(
     _In_ bool terminating)
 {
-    RtlFreeAnsiString(&g_CmdlineA);
+    if (!terminating)
+    {
+        RtlFreeAnsiString(&g_CmdlineA);
+    }
     return true;
 }
 
