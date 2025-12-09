@@ -118,9 +118,18 @@ _CRT_GetProcAddress(
 
 /* Use ntdll UEH instead of kernel32 */
 
-//#define SetUnhandledExceptionFilter RtlSetUnhandledExceptionFilter
-//#define UnhandledExceptionFilter RtlUnhandledExceptionFilter
+/* CRT did not ask for the return value of SetUnhandledExceptionFilter */
+FORCEINLINE
+VOID
+WINAPI
+_CRT_SetUnhandledExceptionFilter(
+    _In_opt_ LPTOP_LEVEL_EXCEPTION_FILTER lpTopLevelExceptionFilter)
+{
+    RtlSetUnhandledExceptionFilter(lpTopLevelExceptionFilter);
+}
 
+#define SetUnhandledExceptionFilter _CRT_SetUnhandledExceptionFilter
+#define UnhandledExceptionFilter RtlUnhandledExceptionFilter
 
 /* Use inline implementations by KNSoft.NDK */
 
