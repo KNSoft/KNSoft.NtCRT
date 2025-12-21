@@ -125,7 +125,10 @@ WINAPI
 _CRT_SetUnhandledExceptionFilter(
     _In_opt_ LPTOP_LEVEL_EXCEPTION_FILTER lpTopLevelExceptionFilter)
 {
+    /* C28023: _Function_class_ annotation warning */
+#pragma warning(disable: 28023)
     RtlSetUnhandledExceptionFilter(lpTopLevelExceptionFilter);
+#pragma warning(default: 28023)
 }
 
 #define SetUnhandledExceptionFilter _CRT_SetUnhandledExceptionFilter

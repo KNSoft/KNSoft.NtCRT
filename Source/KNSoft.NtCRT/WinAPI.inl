@@ -191,7 +191,7 @@ try_load_library_from_system_directory(
     NTSTATUS Status;
 
     /* LDR_PATH_SEARCH_SYSTEM32 since NT6.0/6.1 with KB2533623 */
-    if (_KNSOFT_NTCRT_NT5_SUPPORT && SharedUserData->NtMajorVersion < 6)
+    if (!IS_NT_VERSION_GE(NT_VERSION_VISTA))
     {
         goto _Fallback;
     }
