@@ -163,6 +163,7 @@
     <None Include="UCRT\Heap.inl" />
     <None Include="UCRT\Internal\Misc.inl" />
     <None Include="UCRT\Lowio.inl" />
+    <None Include="UCRT\MBString.inl" />
     <None Include="UCRT\Misc\Func.inl" />
     <None Include="UCRT\Startup\ArgV.inl" />
     <None Include="UCRT\Startup\Misc.inl" />
@@ -176,6 +177,8 @@
   <ItemGroup>
     <ClInclude Include="Stub\corecrt_internal_ffs.h" />
     <ClInclude Include="Stub\corecrt_internal_state_isolation.h" />
+    <ClInclude Include="Stub\ehassert.h" />
+    <ClInclude Include="Stub\ehhooks.h" />
     <ClInclude Include="Stub\faststat.h" />
     <ClInclude Include="Stub\undname.h" />
   </ItemGroup>

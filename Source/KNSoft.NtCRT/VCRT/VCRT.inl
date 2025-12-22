@@ -23,6 +23,8 @@ EXTERN_C_END
 #include <locks.cpp>
 #include <tncleanup.cpp>
 #include <utility_desktop.cpp>
+#include <throw.cpp>
+#include <frame.cpp>
 
 #define reentrancy_sentinel vcrt_reentrancy_sentinel
 #include <per_thread_data.cpp>

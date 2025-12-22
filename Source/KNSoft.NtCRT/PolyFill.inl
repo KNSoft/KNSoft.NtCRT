@@ -35,29 +35,6 @@ _GS_GetTickCount64(VOID)
  */
 
 FORCEINLINE
-_Must_inspect_result_
-BOOL
-WINAPI
-_CRT_InitializeCriticalSectionAndSpinCount(
-    _Out_ LPCRITICAL_SECTION lpCriticalSection,
-    _In_ DWORD dwSpinCount)
-{
-#if _CRT_NTDDI_MIN >= NTDDI_VISTA
-    RtlInitializeCriticalSectionAndSpinCount(lpCriticalSection, dwSpinCount);
-    return TRUE;
-#else
-    NTSTATUS Status = RtlInitializeCriticalSectionAndSpinCount(lpCriticalSection, dwSpinCount);
-    if (NT_SUCCESS(Status))
-    {
-        return TRUE;
-    }
-
-    _Inline_BaseSetLastNTError(Status);
-    return FALSE;
-#endif
-}
-
-FORCEINLINE
 BOOL
 WINAPI
 _CRT_InitializeCriticalSectionEx(
@@ -134,6 +111,25 @@ _CRT_SetUnhandledExceptionFilter(
 #define SetUnhandledExceptionFilter _CRT_SetUnhandledExceptionFilter
 #define UnhandledExceptionFilter RtlUnhandledExceptionFilter
 
+/* Use code page data in PEB instead of calling GetACP and GetOEMCP */
+
+__inline
+UINT
+WINAPI
+_CRT_GetACP(void)
+{
+    // return NlsAnsiCodePage;
+    return NtCurrentPeb()->AnsiCodePageData->CodePage;
+}
+
+__inline
+UINT
+WINAPI
+_CRT_GetOEMCP(void)
+{
+    return NtCurrentPeb()->OemCodePageData->CodePage;
+}
+
 /* Use inline implementations by KNSoft.NDK */
 
 #define GetCurrentThreadId _Inline_GetCurrentThreadId
@@ -141,6 +137,7 @@ _CRT_SetUnhandledExceptionFilter(
 #define GetCurrentThread _Inline_GetCurrentThread
 #define GetCurrentProcess _Inline_GetCurrentProcess
 #define GetEnvironmentStringsW _Inline_GetEnvironmentStringsW
+#define SetEnvironmentVariableW _Inline_SetEnvironmentVariableW
 #define FreeEnvironmentStringsW _Inline_FreeEnvironmentStringsW
 #define GetStartupInfoW _Inline_GetStartupInfoW
 #define GetModuleHandleW _Inline_GetModuleHandleW
@@ -152,6 +149,7 @@ _CRT_SetUnhandledExceptionFilter(
 #define IsThreadAFiber _Inline_IsThreadAFiber
 #define ExitProcess _Inline_ExitProcess
 #define TerminateProcess _Inline_TerminateProcess
+//#define RaiseException _Inline_RaiseException
 
 #define TlsAlloc _Inline_TlsAlloc
 #define TlsFree _Inline_TlsFree
@@ -169,7 +167,8 @@ _CRT_SetUnhandledExceptionFilter(
 
 #define EncodePointer _Inline_EncodePointer
 #define DecodePointer _Inline_DecodePointer
-#define InitializeCriticalSectionAndSpinCount _CRT_InitializeCriticalSectionAndSpinCount
+#define InitializeCriticalSectionEx _CRT_InitializeCriticalSectionEx
+#define InitializeCriticalSectionAndSpinCount _Inline_InitializeCriticalSectionAndSpinCount
 #define DeleteCriticalSection _Inline_DeleteCriticalSection
 #define EnterCriticalSection _Inline_EnterCriticalSection
 #define LeaveCriticalSection _Inline_LeaveCriticalSection
@@ -193,3 +192,6 @@ _CRT_SetUnhandledExceptionFilter(
 #define IsProcessorFeaturePresent _Inline_IsProcessorFeaturePresent
 #define InitializeSListHead _Inline_InitializeSListHead
 #define InterlockedFlushSList _Inline_InterlockedFlushSList
+
+#define GetACP _CRT_GetACP
+#define GetOEMCP _CRT_GetOEMCP

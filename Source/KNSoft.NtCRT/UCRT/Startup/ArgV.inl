@@ -88,4 +88,16 @@ __acrt_uninitialize_command_line(
     return true;
 }
 
+/* TODO: Expanding wildcard arguments is not supported yet */
+
+errno_t __acrt_expand_narrow_argv_wildcards(char** const argv, char*** const result)
+{
+    return ENOTSUP;
+}
+
+errno_t __acrt_expand_wide_argv_wildcards(wchar_t** const argv, wchar_t*** const result)
+{
+    return ENOTSUP;
+}
+
 EXTERN_C_END
