@@ -23,10 +23,10 @@ _GS_GetTickCount64(VOID)
 {
     return
 #if defined (_WIN64)
-        UnsignedMultiplyHigh((ULONGLONG)SharedUserData->TickCountMultiplier << 32, SharedUserData->TickCountQuad << 8);
+        (SharedUserData->TickCountMultiplier * SharedUserData->TickCountQuad) >> 24;
 #else
-        ((SharedUserData->TickCountMultiplier * (ULONGLONG)SharedUserData->TickCount.High1Time) << 8) +
-        ((SharedUserData->TickCountMultiplier * (ULONGLONG)SharedUserData->TickCount.LowPart) >> 24);
+        (UInt32x32To64(SharedUserData->TickCountMultiplier, SharedUserData->TickCount.LowPart) >> 24) +
+        (UInt32x32To64(SharedUserData->TickCountMultiplier, SharedUserData->TickCount.High1Time) << 8);
 #endif
 }
 
@@ -149,7 +149,7 @@ _CRT_GetOEMCP(void)
 #define IsThreadAFiber _Inline_IsThreadAFiber
 #define ExitProcess _Inline_ExitProcess
 #define TerminateProcess _Inline_TerminateProcess
-//#define RaiseException _Inline_RaiseException
+#define RaiseException _Inline_RaiseException
 
 #define TlsAlloc _Inline_TlsAlloc
 #define TlsFree _Inline_TlsFree

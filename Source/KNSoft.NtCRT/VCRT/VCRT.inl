@@ -18,6 +18,8 @@ EXTERN_C_START
 #undef GetSystemTimeAsFileTime
 #undef GetTickCount64
 
+#include <debugger_jmc.c>
+
 EXTERN_C_END
 
 #include <locks.cpp>

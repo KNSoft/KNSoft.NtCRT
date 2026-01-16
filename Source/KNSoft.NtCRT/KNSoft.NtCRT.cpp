@@ -9,6 +9,7 @@
 #include "UCRT/Internal/Misc.inl"
 #include "UCRT/Heap.inl"
 #include "UCRT/Lowio.inl"
+#include "UCRT/MBString.inl"
 #include "UCRT/Stdio.inl"
 
 #include "VCRT/VCRT.inl"

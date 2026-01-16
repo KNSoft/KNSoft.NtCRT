@@ -60,10 +60,10 @@
     <None Include="UCRT\FileSystem.inl">
       <Filter>UCRT</Filter>
     </None>
-    <None Include="packages.config" />
     <None Include="UCRT\MBString.inl">
       <Filter>UCRT</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="KNSoft.NtCRT.cpp" />
