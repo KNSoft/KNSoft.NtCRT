@@ -87,5 +87,8 @@
     <ClInclude Include="Stub\ehhooks.h">
       <Filter>Stub</Filter>
     </ClInclude>
+    <ClInclude Include="Stub\vcwininternls.h">
+      <Filter>Stub</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

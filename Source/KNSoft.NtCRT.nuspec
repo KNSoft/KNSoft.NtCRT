@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/01/nuspec.xsd">
+  <metadata>
+    <id>KNSoft.NtCRT</id>
+    <version>1.0.0-beta</version>
+    <title>KNSoft.NtCRT</title>
+    <authors>KNSoft</authors>
+    <projectUrl>https://github.com/KNSoft/KNSoft.NtCRT</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <readme>README.md</readme>
+    <description>A MSVCRT compatible C Runtime depends on Ntdll only.</description>
+    <tags>Windows WinAPI Win32 CRT MSVCRT WinSDK</tags>
+    <repository type="git" url="https://github.com/KNSoft/KNSoft.NtCRT" />
+  </metadata>
+  <files>
+    <file src="..\README.md" target="" />
+    <file src="KNSoft.NtCRT.targets" target="build\" />
+
+    <file src="KNSoft.NtCRT\IntDir\**\KNSoft.NtCRT.obj" exclude="KNSoft.NtCRT\IntDir\x86\**" target="build\Lib\" />
+    <file src="KNSoft.NtCRT\IntDir\x86\**\KNSoft.NtCRT.obj" target="build\Lib\Win32\" />
+  </files>
+</package>

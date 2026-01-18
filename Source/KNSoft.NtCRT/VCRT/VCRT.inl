@@ -11,6 +11,7 @@ EXTERN_C_START
 #define GetSystemTimeAsFileTime _GS_GetSystemTimeAsFileTime
 #define GetTickCount64 _GS_GetTickCount64
 
+/* Before VS2026, define PROCESSOR_FAST_FAIL_AVAILABLE to prevent fallback */
 #define PROCESSOR_FAST_FAIL_AVAILABLE
 #include <gs_report.c>
 #include <gs_support.c>

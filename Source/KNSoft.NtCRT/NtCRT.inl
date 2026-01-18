@@ -30,13 +30,19 @@
 #define NT_VERSION_MIN NT_VERSION_WINXP
 #endif
 
+/* Avoid includes "winternl.h" in ARM64EC */
+#if defined(_M_ARM64EC)
+#define _WINTERNL_
+#endif
+
 #include <KNSoft/NDK/NDK.h>
 
 #include "PolyFill.inl"
 
 /* Internal headers */
 
-#pragma warning(disable: 5247 5248) // Section 'section-name' is reserved for C++ dynamic initialization.
+// Section 'section-name' is reserved for C++ dynamic initialization.
+#pragma warning(disable: 5247 5248)
 #include <internal_shared.h>
 #pragma warning(default: 5247 5248)
 
